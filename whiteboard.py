@@ -12,8 +12,6 @@ frame1 = np.zeros((600, 800, 3), dtype=np.uint8)
 
 # Initialize a set to store unique extracted text
 extracted_text_set = set()
-
-
 def draw(event, x, y, flags, param):
     global drawing, last_point, frame1
     if event == cv2.EVENT_LBUTTONDOWN:
