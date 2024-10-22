@@ -33,7 +33,6 @@ def evaluate_expression(expression):
     except Exception as e:
         return f"Error: {str(e)}"
 
-
 def find_and_evaluate_math(text):
     pattern1 = re.compile(r'(\d+)\s*([\+\-\*\/\^])\s*(\d+)')  
     pattern2=re.compile(r'(\d+)\s*([\+\-\*\/\^])\s*(\d+)\s*([\+\-\*\/\^])\s*(\d+)')
