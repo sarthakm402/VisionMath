@@ -44,7 +44,6 @@ def find_and_evaluate_math(text):
         
         expression = f"{num1} {operator1} {num2}"
         result = evaluate_expression(expression)
-
         print(f"Evaluating: {expression} = {result}")
     if match2:
         num1, operator1,  num2,operator2,num3 = match2.groups()
