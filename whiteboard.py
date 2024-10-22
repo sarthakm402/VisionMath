@@ -6,7 +6,6 @@ import time
 import re
 
 reader = easyocr.Reader(['en'])
-
 drawing = False
 last_point = None
 frame1 = np.zeros((600, 800, 3), dtype=np.uint8)
