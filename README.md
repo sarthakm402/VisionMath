@@ -10,7 +10,7 @@ This project is a "Math Drawing Calculator" that lets users draw mathematical ex
 - **Probability Evaluation**: Calculates complement probabilities from fractions or decimal inputs.
 - **OCR-based Text Extraction**: Recognizes handwritten text using EasyOCR and filters high-confidence results for evaluation.
 
-## Requirements
+## Requirements 
 
 - Python 3.x
 - OpenCV (`cv2`)
