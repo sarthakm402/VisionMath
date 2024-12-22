@@ -8,7 +8,7 @@ import sympy as sp
 
 # Initialize easyocr reader
 reader = easyocr.Reader(['en'])
-
+ 
 drawing = False
 last_point = None
 frame1 = np.zeros((800, 800, 3), dtype=np.uint8)
