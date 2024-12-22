@@ -2,7 +2,7 @@
 import cv2
 import numpy as np
 import easyocr
-import time
+import time 
 import re
 import sympy as sp
 
