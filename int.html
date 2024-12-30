@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Expression Drawer</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <style>
+        #canvas-container {
+            position: relative;
+        }
+        #canvas {
+            border: 1px solid black;
+        }
+    </style>
+</head>
+<body>
+    <h1>Draw Your Math Expression</h1>
+    <div id="canvas-container">
+        <canvas id="canvas" width="500" height="500"></canvas>
+    </div>
+    <button id="submit-btn">Submit</button>
+    <button id="clear-btn">Clear Canvas</button>
+    <div id="result"></div>
+
+    <script>
+        let canvas;
+        let ctx;
+        let drawing = false;
+        let lastX = 0;
+        let lastY = 0;
+
+        function setup() {
+            canvas = document.getElementById("canvas");
+            ctx = canvas.getContext("2d");
+            ctx.lineWidth = 5;
+            ctx.lineCap = "round";
+            ctx.strokeStyle = "white";
+
+            canvas.addEventListener('mousedown', startDrawing);
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('mouseup', stopDrawing);
+            canvas.addEventListener('mouseout', stopDrawing);
+        }
+
+        function startDrawing(e) {
+            drawing = true;
+            lastX = e.offsetX;
+            lastY = e.offsetY;
+        }
+
+        function draw(e) {
+            if (!drawing) return;
+            ctx.beginPath();
+            ctx.moveTo(lastX, lastY);
+            ctx.lineTo(e.offsetX, e.offsetY);
+            ctx.stroke();
+            lastX = e.offsetX;
+            lastY = e.offsetY;
+        }
+
+        function stopDrawing() {
+            drawing = false;
+        }
+
+        function clearCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        document.getElementById('clear-btn').addEventListener('click', clearCanvas);
+
+        document.getElementById('submit-btn').addEventListener('click', function() {
+            const image = canvas.toDataURL('image/png');
+            fetch('/process_image', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: `image=${encodeURIComponent(image)}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                let resultHtml = '';
+                data.forEach(item => {
+                    resultHtml += `<p><strong>Text:</strong> ${item.text}</p><p><strong>Result:</strong> ${item.result}</p>`;
+                });
+                document.getElementById('result').innerHTML = resultHtml;
+            })
+            .catch(err => console.error('Error:', err));
+        });
+
+        setup();
+    </script>
+</body>
+</html>
