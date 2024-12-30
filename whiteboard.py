@@ -1,19 +1,21 @@
-  
+
+
 import cv2
 import numpy as np
 import easyocr
-import time 
-import re 
-import sympy as sp
+import time
+import re
+import matplotlib.pyplot  as plt
 
 # Initialize easyocr reader
 reader = easyocr.Reader(['en'])
- 
+
 drawing = False
 last_point = None
-frame1 = np.zeros((800, 800, 3), dtype=np.uint8)
+frame1 = np.zeros((1000, 1000, 3), dtype=np.uint8)
 extracted_text_set = set()
-
+def normalize_text(text):
+    return text.replace(' ', '').lower() 
 # Mouse drawing function
 def draw(event, x, y, flags, param):
     global drawing, last_point, frame1
@@ -36,17 +38,30 @@ def evaluate_expression(expression):
         return result
     except Exception as e:
         return f"Error: {str(e)}"
+def plot_graph(eqn,x_range=(-10,10)):
+    x = np.linspace(x_range[0], x_range[1], 400)
+    eqn = eqn.replace('^', '**')
+    y = eval(eqn, {"x": x})
+    plt.plot(x, y, label=f"y = {eqn}")
+    plt.xlabel("x")
+    plt.ylabel("y")
+    plt.title("Graph Plot")
+    plt.legend()
+    plt.grid()
+    plt.show()
+    
+
 
 # Function to find and evaluate math expressions in text
 def find_and_evaluate_math(text):
     pattern = re.compile(r'[0-9+\-*/^().\s]+')  # Simplified pattern to match math expressions
     pythagoras_pattern = re.compile(r'[Tt]\s+([+-]?\d+)\s*,?\s*([+-]?\d+)')  # Match Pythagorean expressions
     prob_pattern = re.compile(r'[Pp]\s+((\d+/\d+)|(\d*\.?\d+))')  # Match fractions or decimals in probabilities
-
+    graph=re.compile(r'[Xx]\s*[0-9+\-*/^().\s]*')
     match_math = pattern.match(text)
     match_pythagoras = pythagoras_pattern.match(text)
     prob_math = prob_pattern.match(text)
-
+    graph_match = graph.match(text)
     if match_math:
         try:
             result = evaluate_expression(text)
@@ -81,7 +96,7 @@ def find_and_evaluate_math(text):
             print("Invalid input for Pythagorean theorem.")
     
     elif prob_math:
-        fraction_or_decimal = prob_math.group(1)  # This gets the full fraction or decimal string
+        fraction_or_decimal = prob_math.group()  # This gets the full fraction or decimal string
         
         try:
             if '/' in fraction_or_decimal:  # If it's a fraction
@@ -108,14 +123,18 @@ def find_and_evaluate_math(text):
     
         except ValueError as e:
             print(f"Error in probability calculation: {e}")
-
+    elif graph_match:
+        # Extract the graph type from the match object
+        graph_type = graph_match.group()
+        plot_graph(graph_type)
+        
 # Initialize OpenCV window and mouse callback
 cv2.namedWindow('Drawing Frame')
 cv2.setMouseCallback('Drawing Frame', draw)
 
 last_time = time.time()
 
-# Main loop
+# Main loopq
 while True:
     cv2.imshow('Drawing Frame', frame1)
 
@@ -123,7 +142,7 @@ while True:
     if np.sum(frame1) > 0 and (time.time() - last_time) > 10.0:
         extracted_text = reader.readtext(frame1)
         for (bbox, text, prob) in extracted_text:
-            text = text.strip()
+            text = normalize_text(text.strip())
             print(f"Extracted Text: {text} (Confidence: {prob:.2f})")
 
             if prob > 0.5:
@@ -139,3 +158,115 @@ while True:
         break
 
 cv2.destroyAllWindows()
+
+# from flask import Flask, render_template, request, jsonify
+# import easyocr
+# import numpy as np
+# import cv2
+# import time
+# from io import BytesIO
+# from PIL import Image
+# import base64
+# import re
+
+# app = Flask(__name__)
+
+# # Initialize EasyOCR
+# reader = easyocr.Reader(['en'])
+
+# # Function to evaluate expressions
+# def evaluate_expression(expression):
+#     try:
+#         expression = expression.replace('^', '**')  # Replacing ^ with ** for power
+#         result = eval(expression)
+#         return result
+#     except Exception as e:
+#         return f"Error: {str(e)}"
+
+# # Function to find and evaluate math expressions
+# def find_and_evaluate_math(text):
+#     pattern = re.compile(r'[0-9+\-*/^().\s]+')  # Simplified pattern to match math expressions
+#     pythagoras_pattern = re.compile(r'[Tt]\s+([+-]?\d+)\s*,?\s*([+-]?\d+)')  # Match Pythagorean expressions
+#     prob_pattern = re.compile(r'[Pp]\s+((\d+/\d+)|(\d*\.?\d+))')  # Match fractions or decimals in probabilities
+    
+#     match_math = pattern.match(text)
+#     match_pythagoras = pythagoras_pattern.match(text)
+#     prob_math = prob_pattern.match(text)
+    
+#     if match_math:
+#         try:
+#             result = evaluate_expression(text)
+#             return f"Evaluating: {text} = {result}"
+#         except Exception as e:
+#             return f"Error evaluating expression: {text}, Error: {e}"
+
+#     elif match_pythagoras:
+#         first, second = map(int, match_pythagoras.groups())
+#         try:
+#             # Case 1: Both values are legs of a triangle
+#             if first > 0 and second > 0:
+#                 hypotenuse = (first**2 + second**2) ** 0.5
+#                 return f"Given legs a={first}, b={second}: Hypotenuse c={hypotenuse:.2f}"
+#             # Case 2: Hypotenuse and one leg
+#             elif first > 0 and second <= 0:
+#                 legb = abs(second)
+#                 if first > legb:
+#                     lega = (first**2 - legb**2) ** 0.5
+#                     return f"Given hypotenuse c={first} and leg b={legb}: Leg a={lega:.2f}"
+#             else:
+#                 return "Invalid Pythagorean input."
+#         except ValueError:
+#             return "Invalid input for Pythagorean theorem."
+
+#     elif prob_math:
+#         fraction_or_decimal = prob_math.group(1)
+#         try:
+#             if '/' in fraction_or_decimal:  # If it's a fraction
+#                 num, denom = map(int, fraction_or_decimal.split('/'))
+#                 if denom != 0:
+#                     probability = num / denom
+#                     result = 1 - probability
+#                     return f"Fraction detected: {num}/{denom} = {probability}, Complement: {result}"
+#                 else:
+#                     return "Denominator cannot be zero."
+#             else:  # It's a decimal
+#                 probability = float(fraction_or_decimal)
+#                 result = 1 - probability
+#                 return f"Decimal detected: {probability}, Complement: {result}"
+#         except ValueError as e:
+#             return f"Error in probability calculation: {e}"
+    
+#     return "No valid math expression detected."
+
+# @app.route('/')
+# def index():
+#     return render_template('int.html')
+
+# @app.route('/process_image', methods=['POST'])
+# def process_image():
+#     image_data = request.form['image']
+#     # Convert the image from base64 string to binary image
+#     image_data = image_data.split(',')[1]
+#     image_data = base64.b64decode(image_data)
+    
+#     # Convert image to numpy array
+#     np_arr = np.frombuffer(image_data, np.uint8)
+#     image = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
+
+#     # Convert image to grayscale for OCR processing
+#     gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+#     # Perform OCR using EasyOCR
+#     extracted_text = reader.readtext(gray_image)
+    
+#     # Find and evaluate math expressions
+#     results = []
+#     for (_, text, prob) in extracted_text:
+#         if prob > 0.5:
+#             result = find_and_evaluate_math(text.strip())
+#             results.append({'text': text.strip(), 'result': result})
+
+#     return jsonify(results)
+
+# if __name__ == '__main__':
+#     app.run(debug=True)
