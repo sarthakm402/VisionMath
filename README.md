@@ -9,6 +9,7 @@ This project is a "Math Drawing Calculator" that lets users draw mathematical ex
 - **Pythagorean Evaluation**: Calculates the hypotenuse or missing leg based on Pythagorean theorem.
 - **Probability Evaluation**: Calculates complement probabilities from fractions or decimal inputs.
 - **OCR-based Text Extraction**: Recognizes handwritten text using EasyOCR and filters high-confidence results for evaluation.
+- **Show Graph**: Is able to how graphs of the equqation prvided for better visualisation.
 
 ## Requirements 
 
