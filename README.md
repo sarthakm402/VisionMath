@@ -1,5 +1,5 @@
 # Vision MATH
-    
+     
 This project is a "Math Drawing Calculator" that lets users draw mathematical expressions directly on a canvas. The application uses OpenCV for the drawing interface, EasyOCR for recognizing handwritten text, and SymPy for evaluating mathematical expressions. It sup ports basic arithmetic, Pythagorean theorem calculations, and probability computations from drawn text.
   
 ## Features
