@@ -11,7 +11,7 @@ reader = easyocr.Reader(['en'])
 
 drawing = False
 last_point = None
-frame1 = np.zeros((1000, 1000, 3), dtype=np.uint8)
+frame1 = np.zeros((1000, 1000,3), dtype=np.uint8)
 extracted_text_set = set()
 def normalize_text(text):
     return text.replace(' ', '').lower() 
