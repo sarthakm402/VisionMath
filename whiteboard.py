@@ -2,7 +2,7 @@
 import cv2 
 import numpy as np
 import easyocr
-import time
+import time 
 import re
 import matplotlib.pyplot  as plt
 
@@ -269,4 +269,5 @@ cv2.destroyAllWindows()
 
 # if __name__ == '__main__':
 #     app.run(debug=True)
+
 
