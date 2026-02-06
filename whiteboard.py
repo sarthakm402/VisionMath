@@ -13,7 +13,7 @@ drawing = False
 last_point = None
 frame1 = np.zeros((1000, 1000,3), dtype=np.uint8)
 extracted_text_set = set()
-def normalize_text(text):
+def normalize_text(text): 
     return text.replace(' ', '').lower() 
 # Mouse drawing function
 def draw(event, x, y, flags, param):
@@ -269,5 +269,6 @@ cv2.destroyAllWindows()
 
 # if __name__ == '__main__':
 #     app.run(debug=True)
+
 
 
